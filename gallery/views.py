@@ -1,19 +1,26 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render, redirect
+from .models import Asset
+from .forms import AssetForm
 # request - запрос клиента на сервер
 def home(request):
-    fake_database = [
-        {'id': 1, 'name': 'Sci-Fi Helmet', 'file_size': '15 MB'},
-        {'id': 2, 'name': 'Old Chair', 'file_size': '2 MB'},
-        {'id': 3, 'name': 'Cyber Truck', 'file_size': '10 MB'},
-        {'id': 4, 'name': 'Fantasy Home', 'file_size': '30 MB'},
-]
+    # ORM Запрос:
+    assets = Asset.objects.all().order_by('-created_at')
     context_data = {
-        'page_title': 'Главная страница',
-        'assets' : fake_database,
-    }
-
+        'page_title': 'Главная Галерея',
+        'assets': assets,
+}
     return render(request, 'gallery/index.html', context_data)
 
 def about(request):
-    return HttpResponse("<p>Курс Web-стуруктуры.</p>")
+    return render(request, 'gallery/about.html')
+
+def upload(request):
+    if request.method == 'POST':
+        form = AssetForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = AssetForm()
+
+    return render(request, 'gallery/upload.html', {'form': form})
