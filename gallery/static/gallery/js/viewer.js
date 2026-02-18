@@ -15,7 +15,7 @@ const scene = new THREE.Scene();
 scene.background = null; // Прозрачный фон
 // Камера
 const camera = new THREE.PerspectiveCamera(
-    75,
+    45,
     container.clientWidth / container.clientHeight,
     0.1,
     1000
@@ -26,10 +26,13 @@ camera.position.z = 2;
 const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
 renderer.setSize(container.clientWidth, container.clientHeight);
 renderer.setPixelRatio(window.devicePixelRatio);
-container.appendChild(renderer.domElement);
 renderer.outputColorSpace = THREE.SRGBColorSpace; //Конвертация цветов под монитор
 renderer.toneMapping = THREE.ACESFilmicToneMapping //Тонирование через ACESFilmic
 renderer.toneMappingExposure = 1; //Экспозиция тонирования
+
+//Очистка контейнера от текста
+container.innerHTML = '';
+container.appendChild(renderer.domElement);
 
 // Контроллеры
 const controls = new OrbitControls(camera, renderer.domElement);
@@ -42,21 +45,16 @@ controls.dampingFactor = 0.05;
 controls.minDistance = 0.1;
 controls.maxDistance = 50;
 
-//Очистка контейнера от текста
-container.innerHTML = '';
-container.appendChild(renderer.domElement);
-
 // Куб
-//const geometry = new THREE.BoxGeometry(1, 1, 1);
-//const material = new THREE.MeshStandardMaterial({ color: 0x007bff }); 
-//const cube = new THREE.Mesh(geometry, material);
-//scene.add(cube);
+// const geometry = new THREE.BoxGeometry(1, 1, 1);
+// const material = new THREE.MeshStandardMaterial({ color: 0x007bff }); 
+// const cube = new THREE.Mesh(geometry, material);
+// scene.add(cube);
 
 //Свет
-//const light = new THREE.DirectionalLight(0xffffff, 2); 
-//light.position.set(5, 5, 5);
-//scene.add(light);
-
+// const light = new THREE.DirectionalLight(0xffffff, 2); 
+// light.position.set(5, 5, 5);
+// scene.add(light);
 const premGenerator = new THREE.PMREMGenerator(renderer);
 premGenerator.compileEquirectangularShader();
 
@@ -67,7 +65,7 @@ scene.environment = premGenerator.fromScene(roomEnvironment).texture;
 const loaderDiv = document.createElement('div');
 loaderDiv.className = 'loader-overlay';
 loaderDiv.innerHTML = `
-    <div style="color: #666; font-size: 0.9rem;">Loading...</div>
+    <div style="color: #666; font-size: 0.9rem; opacity: 0;">Loading...</div>
     <div class="progress-bar">
         <div class="progress-fill"></div>
     </div>
@@ -88,16 +86,14 @@ loader.load(modelUrl,
     (gltf) => {
     const model = gltf.scene; // Сохраняем ссылку
     console.log('model loaded', model);
-    const boundingBox = new THREE.Box3().setFromObject(model);
-    console.log('bounding box', boundingBox);
-    fitCameraToObject(camera, model, controls);
+    fitCameraToObject(camera, model, 1.5);
     console.log('camera after fit', camera.position.toArray());
     scene.add(model);
 
     // Скрываем загрузчик после загрузки
-    loaderDiv.style.display = 'none'; 
+    loaderDiv.style.opacity = '0'; 
     setTimeout(() => {
-        loaderDiv.remove();
+       loaderDiv.remove();
     }, 300);
 },
 

@@ -41,6 +41,32 @@ header{
     background: radial-gradient(circle, #ffffff,#e0e0e0);
 }
 
+.card-info{
+    padding: 20px;
+}
+.card-title{
+    margin: 0 0 10px 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+.card-meta{
+    font-size: 0.9rem;
+    color: #777;
+    margin-bottom: 15px;
+}
+.btn{
+    display: inline-block;
+    text-decoration: none;
+    background-color: #007bff;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+.btn:hover {
+    background-color: #0056b3;
+}
+
 /*экран загрузки*/
 .loader-overlay{
     position: absolute;
@@ -74,30 +100,4 @@ error-message{
     color: #dc3545;
     text-align: center;
     padding: 20px;
-}
-
-.card-info{
-    padding: 20px;
-}
-.card-title{
-    margin: 0 0 10px 0;
-    font-size: 1.2rem;
-    color: #333;
-}
-.card-meta{
-    font-size: 0.9rem;
-    color: #777;
-    margin-bottom: 15px;
-}
-.btn{
-    display: inline-block;
-    text-decoration: none;
-    background-color: #007bff;
-    color: white;
-    padding: 8px 16px;
-    border-radius: 6px;
-    font-size: 0.9rem;
-}
-.btn:hover {
-    background-color: #0056b3;
 }
