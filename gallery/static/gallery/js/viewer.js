@@ -2,6 +2,11 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+
+
+
+
 // Отдельный импорт PMREMGenerator не нужен!
 export function loadModel(containerId, modelUrl) {
     const container = document.getElementById(containerId);
@@ -32,6 +37,8 @@ renderer.toneMappingExposure = 1; //Экспозиция тонирования
 
 //Очистка контейнера от текста
 container.innerHTML = '';
+container.style.backgroundImage = 'none';
+container.style.background = 'transparent';
 container.appendChild(renderer.domElement);
 
 // Контроллеры
@@ -91,10 +98,12 @@ loader.load(modelUrl,
     scene.add(model);
 
     // Скрываем загрузчик после загрузки
-    loaderDiv.style.opacity = '0'; 
-    setTimeout(() => {
-       loaderDiv.remove();
-    }, 300);
+     // Fade out and stop intercepting pointer events so canvas becomes interactive
+     loaderDiv.style.opacity = '0';
+     loaderDiv.style.pointerEvents = 'none';
+     setTimeout(() => {
+         loaderDiv.remove();
+     }, 300);
 },
 
 // Прогресс загрузки

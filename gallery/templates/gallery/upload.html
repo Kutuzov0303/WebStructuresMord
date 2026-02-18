@@ -16,7 +16,30 @@
         <div class="form-group">
             {{ form.as_p}}
         </div>
-        <button type="submit">Загрузить в базу</button>
+
+        <div style = "margin-bottom: 20px;">
+            <p>Автоматически сгенерировать превью:</p>
+
+         <div id="preview-container" style="width: 300px; height: 200px; background: #eee; border: 1px solid #ccc;">   
+            <span style="display: block; padding: 80px; text-align: center; color: #999;">Выберите файл...</span>
+            </div>
+
+            <input type="hidden" name="image_data" id="id_image_data">
+        </div>
+
+       <button type="submit" id="submit-btn" disabled>Загрузить в базу</button>
+
+       {% load static %}
+       <script type = "importmap">
+        {
+            "imports":{
+                "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+            }
+        }
+         </script>
+         <script type="module" src="{% static 'gallery/js/autothumb.js' %}"></script>
+         
     </form>
     <br>
     <!-- Он ищет в urls.py путь с name='home' -->

@@ -26,11 +26,20 @@
             {% for asset in assets %}
                <div class="asset-card">
                 <!-- 1.Контейнер с Превью (Верхняя часть) -->
-                   <div class="card-preview"
+                   <div class="card-preview js-load-3d"
                         id="model-container-{{ asset.id }}"
-                        data-url="{{ asset.file.url }}">
-                        <!-- Временно оставим текст, пока JS не заменит его на Canvas -->
-                         3D Превью недоступно
+                        data-url="{{ asset.file.url }}"
+                        {% if asset.image %}
+                            style="background-image: url('{{ asset.image.url }}');"
+                        {% endif %}
+                        >
+
+                        {% if asset.image %}
+                            <!-- Play button will be drawn with CSS (pseudo-element) -->
+                            <div class="play-btn">▶</div>
+                        {% else %}
+                            <span style="font-size: 2rem;">🎲</span>
+                        {% endif %}
                    </div>
                 <!-- 2. Контейнер с Информация (Нижняя часть) -->
                  <div class="card-info">
@@ -63,14 +72,28 @@
     <script type="module">
         //Импорт
         import { loadModel } from "{% static 'gallery/js/viewer.js' %}";
-        const containers = document.querySelectorAll('.card-preview');
+
+        const containers = document.querySelectorAll('.js-load-3d');
+
         containers.forEach(container => {
-            const id = container.id;
-            const url = container.dataset.url;
+
+            container.addEventListener('click', function(){
+
+                if(this.querySelector('canvas')) return; // Если Canvas уже есть
+
+                this.innerHTML = ''; // Очистить содержимое для загрузки Canvas
+
+
+            
+
+            const id = this.id;
+            const url = this.dataset.url;
 
             if (url) {
+                console.log("Загружаю 3D по требованию:", url);
                 loadModel(id, url);
             }
+            });
         });
     </script>
 </body>
