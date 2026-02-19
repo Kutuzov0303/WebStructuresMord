@@ -4,6 +4,8 @@ from django.shortcuts import render, redirect
 from .models import Asset
 from .forms import AssetForm
 from django.db.models import Q # Импортируем Q-object для сложного поиска
+from django.core.paginator import Paginator
+from django.contrib import messages
 
 # request - запрос клиента на сервер
 def home(request):
@@ -35,10 +37,17 @@ def home(request):
     else:
         assets = assets.order_by('-created_at') # Сортируем по дате создания (новые первыми)
 
+    #Пагинация
+    paginator = Paginator(assets, 8) # Показывать по 8 штук
+
+    page_number = request.GET.get('page')
+
+    page_obj = paginator.get_page(page_number)
+
     #Отдаём результат
     context_data = {
         'page_title': 'Главная галерея',
-        'assets': assets,
+        'page_obj': page_obj,
 }
     return render(request, 'gallery/index.html', context_data)
 
@@ -65,6 +74,8 @@ def upload(request):
 
             # Сохраняем объект в базе данных
             new_asset.save()
+
+            messages.success(request, f'Модель "{new_asset.title}" успешно загружена!') #Уведомление о загрузке
 
             return redirect('home')
     else:

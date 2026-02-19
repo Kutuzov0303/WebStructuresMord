@@ -120,6 +120,10 @@ header{
     margin: 0 0 10px 0;
     font-size: 1.2rem;
     color: #333;
+
+    white-space: nowrap; /* Запрет переноса на новую строку */
+    overflow: hidden;   /* Скрыть хвост */
+    text-overflow: ellipsis; /* Добавить многоточие */
 }
 .card-meta{
     font-size: 0.9rem;
@@ -220,4 +224,69 @@ header{
     color: #dc3545;
     text-decoration: none;
     font-size: 0.9rem;
+}
+
+/*Пагинация*/
+.pagination{
+    margin: 40px;
+    text-align: center;
+    padding: 20px;
+}
+
+.pagination a{
+    display: inline-block;
+    padding: 8px 16px;
+    margin: 0 5px;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+}
+
+.pagination a:hover{
+    background: #f0f0f0;
+}
+
+.pagination .current{
+    font-weight: bold;
+    margin: 0 10px;
+}
+
+/*Мессэджи*/
+.messager-container{
+    position: fixed;
+    top: 20px; right: 20px;
+    z-index: 1000;
+    width: 300px;
+}
+
+.alert{
+    padding: 15px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    animation: slide-in 0.5s ease-out;
+}
+
+.alert.success{
+    background-color: #28a745;
+}
+.alert.error{
+    background-color: #dc3545;
+}
+.alert.warning{
+    background-color: #ffc107;
+}
+
+@keyframes slideIn{
+    from{
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to{
+        transform: translateX(0);
+        opacity: 1;
+    }
 }

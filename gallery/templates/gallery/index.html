@@ -13,9 +13,22 @@
         }
     </script>
     {% load static %}
+    {% load gallery_extras %}
     <link rel="stylesheet" href="{% static 'gallery/style.css' %}">
 </head>
 <body>
+
+    <!-- Блок уведомлений -->
+     {% if messages %}
+     <div class = "message-container">
+        {% for message in messages %}
+            <div class="message {{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+     </div>
+    {% endif %}
+
     <header>
         <h1>{{ page_title }}</h1>
         <!-- Ссылка на загрузку теперь выглядит как кнопка -->
@@ -61,7 +74,7 @@
 
     <main>
         <div class="gallery-grid">
-            {% for asset in assets %}
+            {% for asset in page_obj %}
                <div class="asset-card">
                 <!-- 1.Контейнер с Превью (Верхняя часть) -->
                    <div class="card-preview js-load-3d"
@@ -112,6 +125,27 @@
                 <p>База пуста</p>
                 {% endfor %}
         </div>
+
+        <!-- Пагинация -->
+         <div class="pagination">
+            <span class="step-links">
+                {% if page_obj.has_previous %}
+                    <a href="?{% param_replace request page=1 %}">&laquo; Первая</a>
+                    <a href="?{% param_replace request page=page_obj.previous_page_number %}">Назад</a>"
+                {% endif %}
+
+                <span class="current">
+                    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                </span>
+
+                {% if page_obj.has_next %}
+                    <a href="?{% param_replace request page=page_obj.next_page_number %}">Далее</a>
+                    <a href="?{% param_replace request page=page_obj.paginator.num_pages%}">Последняя &raquo;</a>
+                {% endif %}
+            </span>
+
+         </div>
+
     </main>
 
     <footer>
