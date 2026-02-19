@@ -5,5 +5,7 @@ class GalleryConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'gallery'
 
-def ready(self):
-    import gallery.signals
+    def ready(self):
+        # При старте приложения импортируем обработчики сигналов,
+        # чтобы post_delete выполнялся и удалял файлы с диска.
+        import gallery.signals

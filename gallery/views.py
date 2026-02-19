@@ -38,7 +38,7 @@ def home(request):
         assets = assets.order_by('-created_at') # Сортируем по дате создания (новые первыми)
 
     #Пагинация
-    paginator = Paginator(assets, 8) # Показывать по 8 штук
+    paginator = Paginator(assets, 4) # Показывать по 4 штук
 
     page_number = request.GET.get('page')
 
