@@ -3,12 +3,41 @@ from django.core.files.base import ContentFile
 from django.shortcuts import render, redirect
 from .models import Asset
 from .forms import AssetForm
+from django.db.models import Q # Импортируем Q-object для сложного поиска
+
 # request - запрос клиента на сервер
 def home(request):
-    # ORM Запрос:
-    assets = Asset.objects.all().order_by('-created_at')
+    search_query = request.GET.get('q', '') # Получаем строку поиска из GET-запроса
+    ordering = request.GET.get('ordering', 'new') #По умолчанию новые
+    days = request.GET.get('days')  # фильтрация по последним нескольким дням
+
+    assets = Asset.objects.all() # Получаем все объекты модели Asset
+
+    if search_query:
+        assets = assets.filter(title__icontains=search_query)
+
+    # отфильтровать по дате, если указан параметр
+    if days:
+        try:
+            days_int = int(days)
+            from django.utils import timezone
+            from datetime import timedelta
+
+            assets = assets.filter(created_at__gte=timezone.now() - timedelta(days=days_int))
+        except ValueError:
+            # игнорируем нечисловой input
+            pass
+
+    if ordering == 'old':
+        assets = assets.order_by('created_at') # Сортируем по дате создания (старые первыми)
+    elif ordering == 'name':
+        assets = assets.order_by('title') # Сортируем по названию (по алфавиту)
+    else:
+        assets = assets.order_by('-created_at') # Сортируем по дате создания (новые первыми)
+
+    #Отдаём результат
     context_data = {
-        'page_title': 'Главная Галерея',
+        'page_title': 'Главная галерея',
         'assets': assets,
 }
     return render(request, 'gallery/index.html', context_data)

@@ -41,6 +41,26 @@ container.style.backgroundImage = 'none';
 container.style.background = 'transparent';
 container.appendChild(renderer.domElement);
 
+    // кнопка закрытия для возвращения к превью
+    const closeBtn = document.createElement('div');
+    closeBtn.className = 'close-btn';
+    closeBtn.textContent = '✖';
+    closeBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // прекратить анимацию
+        running = false;
+        // удалить canvas и загрузчик
+        container.innerHTML = container.dataset.originalHtml || '';
+        // вернуть фон
+        const thumb = container.dataset.thumb;
+        if (thumb) {
+            container.style.backgroundImage = `url('${thumb}')`;
+        } else {
+            container.style.backgroundImage = '';
+        }
+    });
+    container.appendChild(closeBtn);
+
 // Контроллеры
 const controls = new OrbitControls(camera, renderer.domElement);
 
@@ -143,7 +163,9 @@ error => {
 
 
 // Анимация
+let running = true;
 function animate() {
+    if (!running) return; // прекратить когда закрыт
     requestAnimationFrame(animate); // Запрос кадра
     
     controls.update(); // Обновление контроллеров каждый кадр

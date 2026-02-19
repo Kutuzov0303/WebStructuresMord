@@ -21,6 +21,44 @@
         <!-- Ссылка на загрузку теперь выглядит как кнопка -->
         <a href="{% url 'upload' %}" class="btn" style="background-color: #28a745;">+Загрузить модель</a>
     </header>
+
+    <!-- Блок поиска и фильтров -->
+     <div class="toolbar">
+        <form action="{% url 'home' %}" method="get" style="display: flex; width: 100%; gap: 10px; align-items: center;">
+            {# скрытый инпут, чтобы параметр days не сбрасывался при поиске/сортировке #}
+            {% if request.GET.days %}
+                <input type="hidden" name="days" value="{{ request.GET.days }}">
+            {% endif %}
+
+            <input type='text' name = 'q' class="search-input"
+                   placeholder="Поиск 3D моедели по названию..." 
+                   value="{{ request.GET.q|default:'' }}">
+
+            <select name = "ordering" class = "sort-select" onchange="this.form.submit()">
+                <option value="new" {% if request.GET.ordering == 'new' %}selected{% endif %}>Сначала новые</option>
+                <option value="old" {% if request.GET.ordering == 'old' %}selected{% endif %}>Сначала старые</option>
+                <option value="name" {% if request.GET.ordering == 'name' %}selected{% endif %}>По имени (А-Я)</option>
+            </select>
+
+            <button type="submit" class="search-btn">Найти</button>
+
+            {% if request.GET.q or request.GET.ordering or request.GET.days %}
+               <a href="{% url 'home' %}" class="reset-link">✖ Сбросить</a>
+            {% endif %}
+
+            {# ссылка на фильтрацию по дате #}
+            <div style="margin-left: 20px;">
+                {% if request.GET.days == '1' %}
+                    {# уже действует фильтр – предложить сброс #}
+                    <a href="{% url 'home' %}?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.ordering %}ordering={{ request.GET.ordering }}&{% endif %}" class="reset-link">✖ Снять фильтр даты</a>
+                {% else %}
+                    <a href="{% url 'home' %}?days=1{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.ordering %}&ordering={{ request.GET.ordering }}{% endif %}" class="filter-link">Только за сегодня</a>
+                {% endif %}
+            </div>
+
+        </form>
+    </div>
+
     <main>
         <div class="gallery-grid">
             {% for asset in assets %}
@@ -31,6 +69,7 @@
                         data-url="{{ asset.file.url }}"
                         {% if asset.image %}
                             style="background-image: url('{{ asset.image.url }}');"
+                            data-thumb="{{ asset.image.url }}"
                         {% endif %}
                         >
 
@@ -61,6 +100,15 @@
                  </div>
                </div>
                {% empty %}
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 40px;">
+                        {% if request.GET.q %}
+                            <h3>По запросу "<b>{{ request.GET.q }}</b>" ничего не найдено 🕵️</h3>
+                            <p>Попробуйте изменить запрос или <a href = "{% url 'home' %}">сбросить фильтры</a></p>
+                        {% else %}
+                            <h3>База пуста</h3>
+                            <p>Загрузите первую модель!</p>
+                        {% endif %}
+                    </div>
                 <p>База пуста</p>
                 {% endfor %}
         </div>
@@ -77,14 +125,16 @@
 
         containers.forEach(container => {
 
+            // запомним начальный HTML (фон и кнопка) для возвращения после закрытия
+            if (!container.dataset.originalHtml) {
+                container.dataset.originalHtml = container.innerHTML;
+            }
+
             container.addEventListener('click', function(){
 
                 if(this.querySelector('canvas')) return; // Если Canvas уже есть
 
                 this.innerHTML = ''; // Очистить содержимое для загрузки Canvas
-
-
-            
 
             const id = this.id;
             const url = this.dataset.url;
